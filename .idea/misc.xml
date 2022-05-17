@@ -8,10 +8,11 @@
         <entry key="..\:/ANDROID_PROGRAMS/IOPS_1/app/src/main/res/layout/activity_sensor2.xml" value="0.1" />
         <entry key="..\:/ANDROID_PROGRAMS/IOPS_1/app/src/main/res/layout/layout.xml" value="0.1" />
         <entry key="..\:/ANDROID_PROGRAMS/IOPS_1/app/src/main/res/layout/sensor_activity.xml" value="0.1" />
+        <entry key="..\:/Users/USER/StudioProjects/SmartPhone-Sensor-Data-Collection-App/app/src/main/res/layout/activity_main.xml" value="0.35260416666666666" />
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

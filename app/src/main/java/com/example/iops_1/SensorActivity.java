@@ -34,6 +34,21 @@ public class SensorActivity extends AppCompatActivity {
     sensorEvent[] sensorObject;
     File root;
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_sensor);
+
+        Intent intent = getIntent();
+        position = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
+
+        initiateDirectory();
+
+        buttonsFuctions();
+
+        sensorFunction();
+    }
+
     public void initiateDirectory()
     {
         root = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/IOPS_1");
@@ -42,6 +57,53 @@ public class SensorActivity extends AppCompatActivity {
                 System.out.println("Root Not Created");
             }
         }
+
+    }
+
+    public void buttonsFuctions()
+    {
+        positiontext= findViewById(R.id.currentposition);
+        positiontext.setText("Current Position: " + position);
+        indoor= findViewById(R.id.indoor);
+        outdoor= findViewById(R.id.outdoor);
+        semiindoor= findViewById(R.id.semiindoor);
+
+        indoor.setOnClickListener(view -> {
+
+            position="Indoor";
+            positiontext.setText("Current Position: " + position);
+        });
+
+        outdoor.setOnClickListener(view -> {
+
+            position="Outdoor";
+            positiontext.setText("Current Position: " + position);
+        });
+
+        semiindoor.setOnClickListener(view -> {
+
+            position="Semi-indoor";
+            positiontext.setText("Current Position: " + position);
+        });
+
+    }
+
+    public void sensorFunction()
+    {
+        sm= (SensorManager)getSystemService(SENSOR_SERVICE);
+        allDeviceSensors = sm.getSensorList(Sensor.TYPE_ALL);
+        sensorObject = new sensorEvent[allDeviceSensors.size()];
+
+        for(int i=0;i<allDeviceSensors.size();i++)
+        {
+            sensorObject[i]=new sensorEvent(allDeviceSensors.get(i),i);
+        }
+
+        for(int i=0;i<allDeviceSensors.size();i++)
+        {
+            sm.registerListener(sensorObject[i].sel, allDeviceSensors.get(i), SensorManager.SENSOR_DELAY_NORMAL);
+        }
+
 
     }
 
@@ -87,64 +149,22 @@ public class SensorActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sensor);
-
-        Intent intent = getIntent();
-        position = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
-        positiontext= findViewById(R.id.currentposition);
-        positiontext.setText("Current Position: " + position);//Displaying Current Position
-
-        //All Buttons Click Functions
-        indoor= findViewById(R.id.indoor);
-        outdoor= findViewById(R.id.outdoor);
-        semiindoor= findViewById(R.id.semiindoor);
-
-        indoor.setOnClickListener(view -> {
-
-            position="Indoor";
-            positiontext.setText("Current Position: " + position);
-        });
-
-        outdoor.setOnClickListener(view -> {
-
-            position="Outdoor";
-            positiontext.setText("Current Position: " + position);
-        });
-
-        semiindoor.setOnClickListener(view -> {
-
-            position="Semi-indoor";
-            positiontext.setText("Current Position: " + position);
-        });
-
-        // Sensor Related Code
-        sm= (SensorManager)getSystemService(SENSOR_SERVICE);
-        allDeviceSensors = sm.getSensorList(Sensor.TYPE_ALL);
-        sensorObject = new sensorEvent[allDeviceSensors.size()];
-
-        initiateDirectory();
-    }
-
-    @Override
     protected void onResume() {
-
         super.onResume();
         System.out.println("resumed");
-
-        for(int i=0;i<allDeviceSensors.size();i++)
-        {
-            sensorObject[i]=new sensorEvent(allDeviceSensors.get(i),i);
-        }
-
-        for(int i=0;i<allDeviceSensors.size();i++)
-        {
-            sm.registerListener(sensorObject[i].sel, allDeviceSensors.get(i), SensorManager.SENSOR_DELAY_NORMAL);
-        }
     }
     @Override
     protected void onPause() {
+        System.out.println("paused");
+        super.onPause();
+    }
+    @Override
+    protected void onStop() {
+        System.out.println("stoped");
+        super.onStop();
+    }
+    @Override
+    protected void onDestroy(){
 
         for(int i=0;i<allDeviceSensors.size();i++)
         {
@@ -155,12 +175,7 @@ public class SensorActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
-        System.out.println("paused");
-        super.onPause();
-    }
-    @Override
-    protected void onStop() {
-        System.out.println("stoped");
-        super.onStop();
+        System.out.println("Destroyed");
+        super.onDestroy();
     }
 }

@@ -47,15 +47,6 @@ public class MainActivity extends AppCompatActivity {
 
                 position = (String)adapterView.getItemAtPosition(i);
 
-                /*if(position.equals("Indoor"))
-                    p = 0;
-                else if(position.equals("Outdoor"))
-                    p = 1;
-                else if(position.equals("Semi-Indoor"))
-                    p = 2;
-                else
-                    p = 0;
-                  */
                 System.out.println("Success");
 
             }
@@ -84,33 +75,6 @@ public class MainActivity extends AppCompatActivity {
                 String message = position;
                 intent.putExtra(EXTRA_MESSAGE, message);
                 startActivity(intent);
-
-
-                /*try {
-                        File root=new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/IOPS_1");
-                        if(!root.exists())
-                        {
-                            if(!root.mkdirs())
-                            {
-                                System.out.println("Root Not Created");
-                            }
-
-                        }
-                        String csvname="first.csv";
-                        File csv = new File(root,csvname);
-
-                        CSVWriter csvWriter=new CSVWriter(new FileWriter(csv,true));
-
-                        String row[]=new String[]{name1,no1};
-                        csvWriter.writeNext(row);
-                        csvWriter.close();
-                        Toast.makeText(MainActivity.this,"File Successfully saved",Toast.LENGTH_LONG).show();
-
-                    }
-
-                    catch (IOException e){
-                        e.printStackTrace();
-                    }*/
             }
         });
     }
