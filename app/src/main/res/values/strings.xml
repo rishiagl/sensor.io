@@ -16,4 +16,5 @@
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
     <string name="channel_name">"Check1</string>
     <string name="channel_description">"check2"</string>
+    <string name="Select">Select</string>
 </resources>
