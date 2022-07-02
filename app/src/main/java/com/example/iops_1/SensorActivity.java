@@ -18,7 +18,7 @@ import com.opencsv.CSVWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.List;
+import java.util.ArrayList;
 
 public class SensorActivity extends AppCompatActivity {
 
@@ -30,9 +30,10 @@ public class SensorActivity extends AppCompatActivity {
     Button semiindoor;
     Button saveAndExit;
     SensorManager sm= null;
-    List<Sensor> allDeviceSensors;
-    sensorEvent[] sensorObject;
-    File root;
+    ArrayList<sensorEvent> sensorObject = new ArrayList<>();
+    File rootdir;
+    File tempFiles;
+    File savedFiles;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +44,7 @@ public class SensorActivity extends AppCompatActivity {
         position = bundle.getString("Position");
         delay = Integer.parseInt(bundle.getString("Delay"));
 
+        System.out.println(delay);
         initiateDirectory();
 
         buttonFuctions();
@@ -53,9 +55,23 @@ public class SensorActivity extends AppCompatActivity {
 
     public void initiateDirectory()
     {
-        root = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/IOPS_1");
-        if (!root.exists()) {
-            if (!root.mkdirs()) {
+        rootdir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/IOPS_1");
+        if (!rootdir.exists()) {
+            if (!rootdir.mkdirs()) {
+                System.out.println("Root Not Created");
+            }
+        }
+
+        tempFiles = new File(rootdir + "/Temp");
+        if (!tempFiles.exists()) {
+            if (!tempFiles.mkdirs()) {
+                System.out.println("Root Not Created");
+            }
+        }
+
+        savedFiles = new File(rootdir + "/Saved Files");
+        if (!savedFiles.exists()) {
+            if (!savedFiles.mkdirs()) {
                 System.out.println("Root Not Created");
             }
         }
@@ -96,17 +112,35 @@ public class SensorActivity extends AppCompatActivity {
     public void sensorFunction()
     {
         sm= (SensorManager)getSystemService(SENSOR_SERVICE);
-        allDeviceSensors = sm.getSensorList(Sensor.TYPE_ALL);
-        sensorObject = new sensorEvent[allDeviceSensors.size()];
 
-        for(int i=0;i<allDeviceSensors.size();i++)
-        {
-            sensorObject[i]=new sensorEvent(allDeviceSensors.get(i),i);
+        if(sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)!= null) {
+            sensorObject.add(new sensorEvent(sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)));
+        }
+        if(sm.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)!=null) {
+            sensorObject.add(new sensorEvent(sm.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)));
+        }
+        if(sm.getDefaultSensor(Sensor.TYPE_GYROSCOPE)!= null) {
+            sensorObject.add(new sensorEvent(sm.getDefaultSensor(Sensor.TYPE_GYROSCOPE)));
+        }
+        if(sm.getDefaultSensor(Sensor.TYPE_LIGHT)!=null) {
+            sensorObject.add(new sensorEvent(sm.getDefaultSensor(Sensor.TYPE_LIGHT)));
+        }
+        if(sm.getDefaultSensor(Sensor.TYPE_PRESSURE)!=null) {
+            sensorObject.add(new sensorEvent(sm.getDefaultSensor(Sensor.TYPE_PRESSURE)));
+        }
+        if(sm.getDefaultSensor(Sensor.TYPE_PROXIMITY)!=null) {
+            sensorObject.add(new sensorEvent(sm.getDefaultSensor(Sensor.TYPE_PROXIMITY)));
+        }
+        if(sm.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY)!=null) {
+            sensorObject.add(new sensorEvent(sm.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY)));
+        }
+        if(sm.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE)!=null) {
+            sensorObject.add(new sensorEvent(sm.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE)));
         }
 
-        for(int i=0;i<allDeviceSensors.size();i++)
+        for(int i=0;i<sensorObject.size();i++)
         {
-            sm.registerListener(sensorObject[i].sel, allDeviceSensors.get(i), delay);
+            sm.registerListener(sensorObject.get(i).sel, sensorObject.get(i).sensor, delay);
         }
 
 
@@ -115,19 +149,17 @@ public class SensorActivity extends AppCompatActivity {
     public class sensorEvent {
 
         Sensor sensor;
-        int index;
         float[] values;
         String[] data;
         CSVWriter csvWriter;
         File file;
         long startTime;
 
-        public sensorEvent(Sensor sensor1,int index1)
+        public sensorEvent(Sensor sensor1)
         {
             sensor = sensor1;
-            index = index1;
             startTime = System.nanoTime();
-            file = new File(root, sensor.getName().concat(".csv"));
+            file = new File(tempFiles, sensor.getName().concat(".csv"));
 
             {
                 try {
@@ -149,7 +181,6 @@ public class SensorActivity extends AppCompatActivity {
                 {
                     data[i]=String.valueOf(values[i]);
                 }
-                //System.out.println("jfytytyty");
                 data[i] = position;
                 data[i+1] = String.valueOf(event.timestamp - startTime);
                 try {
@@ -180,23 +211,22 @@ public class SensorActivity extends AppCompatActivity {
     @Override
     protected void onDestroy(){
 
-        for(int i=0;i<allDeviceSensors.size();i++)
+        for(int i=0;i<sensorObject.size();i++)
         {
-            sm.unregisterListener(sensorObject[i].sel);
+            sm.unregisterListener(sensorObject.get(i).sel);
             try {
-                sensorObject[i].csvWriter.close();
+                sensorObject.get(i).csvWriter.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        Toast toast = Toast.makeText(getApplicationContext(), "Sensors Unregistered and File Saved at ".concat(String.valueOf(root)), Toast.LENGTH_LONG);
+        Toast toast = Toast.makeText(getApplicationContext(), "Sensors Unregistered and File Saved at ".concat(String.valueOf(tempFiles)), Toast.LENGTH_LONG);
         toast.show();
         System.out.println("SensorActivity Destroyed");
         super.onDestroy();
     }
     @Override
     public void onBackPressed() {
-        //pass whatevere you want
         Intent intent = getIntent();
         intent.putExtra("result","Back Press");
         setResult(Activity.RESULT_CANCELED,intent);

@@ -23,16 +23,27 @@ public class MainActivity extends AppCompatActivity {
     Button start;
     Spinner spinner;
     String position = "Indoor";
-    int frequency = 0;
-    int delay;
+    double frequency = 0;
+    double delay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        if(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED)
+        {
+            ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},0);
+
+        }
+
+        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.RECORD_AUDIO}, 0);
+        }
+
+
         spinnerFuction();
-        setFrequency();
         buttonFunctions();
     }
 
@@ -67,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
     {
         EditText text= findViewById(R.id.frequency);
         try {
-            frequency = Integer.parseInt(text.getText().toString());
+            frequency = Double.parseDouble(text.getText().toString());
         }
         catch(NumberFormatException n)
         {
@@ -81,11 +92,8 @@ public class MainActivity extends AppCompatActivity {
 
         start.setOnClickListener(view -> {
 
-            if(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED)
-            {
-                ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},0);
+            setFrequency();
 
-            }
             if(frequency>=0.2 && frequency<=50) {
 
                 delay = (1/frequency)*1000000;
@@ -95,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(MainActivity.this, SensorActivity.class);
                 Bundle bundle= new Bundle();
                 bundle.putString("Position",position);
-                bundle.putString("Delay",String.valueOf(delay));
+                bundle.putString("Delay",String.valueOf((int)delay));
                 intent.putExtras(bundle);
                 startActivity(intent);
             }
