@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 
+import android.os.Environment;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -20,17 +21,22 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button start;
     Spinner spinner;
     String position = "Indoor";
-    double frequency = 0;
-    double delay;
+    Button start;
+    Button fileManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        askPermissions();
+        spinnerFunction();
+        buttonFunction();
+    }
+    public void askPermissions()
+    {
         if(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED)
         {
             ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},0);
@@ -39,17 +45,13 @@ public class MainActivity extends AppCompatActivity {
 
         if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
 
-            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.RECORD_AUDIO}, 0);
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.RECORD_AUDIO}, 1);
         }
-
-
-        spinnerFuction();
-        buttonFunctions();
     }
 
-    public void spinnerFuction()
+    public void spinnerFunction()
     {
-        spinner = (Spinner) findViewById(R.id.currentposition);
+        spinner = findViewById(R.id.current_position);
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.position, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -74,44 +76,28 @@ public class MainActivity extends AppCompatActivity {
         spinner.setOnItemSelectedListener(sp);
     }
 
-    public void setFrequency()
+    public void buttonFunction()
     {
-        EditText text= findViewById(R.id.frequency);
-        try {
-            frequency = Double.parseDouble(text.getText().toString());
-        }
-        catch(NumberFormatException n)
-        {
-            System.out.println("Could not parse" + n);
-        }
-
-    }
-    public void buttonFunctions()
-    {
-        start=(Button) findViewById((R.id.start));
+        start=findViewById(R.id.start);
 
         start.setOnClickListener(view -> {
 
-            setFrequency();
+            Intent intent = new Intent(MainActivity.this, SensorActivity.class);
+            Bundle bundle= new Bundle();
+            bundle.putString("Position",position);
+            intent.putExtras(bundle);
+            startActivity(intent);
+        });
 
-            if(frequency>=0.2 && frequency<=50) {
+        fileManager = findViewById(R.id.fileManager);
 
-                delay = (1/frequency)*1000000;
+        fileManager.setOnClickListener(view -> {
 
-                Toast toast = Toast.makeText(getApplicationContext(), "Frequency is set, Registering Sensors", Toast.LENGTH_SHORT);
-                toast.show();
-                Intent intent = new Intent(MainActivity.this, SensorActivity.class);
-                Bundle bundle= new Bundle();
-                bundle.putString("Position",position);
-                bundle.putString("Delay",String.valueOf((int)delay));
-                intent.putExtras(bundle);
-                startActivity(intent);
-            }
-            else
-            {
-                Toast toast = Toast.makeText(getApplicationContext(), "Frequency is either too small or too large.", Toast.LENGTH_SHORT);
-                toast.show();
-            }
+            Intent intent = new Intent(MainActivity.this, FileManager.class);
+            String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/Sensor App" ;
+            //String path = Environment.getExternalStorageDirectory().getPath();
+            intent.putExtra("path",path);
+            startActivity(intent);
         });
     }
 

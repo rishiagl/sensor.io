@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -11,7 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:text="Indoor-Outdoor\nSensor Data Collection"
+        android:text="@string/Heading"
         android:textAlignment="center"
         android:textSize="40sp"
         app:layout_constraintBottom_toTopOf="@+id/text1"
@@ -26,10 +27,10 @@
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_marginTop="50dp"
-        android:text="Select your current position"
+        android:text="@string/Spinner_head"
         android:textAlignment="center"
         android:textSize="17sp"
-        app:layout_constraintBottom_toTopOf="@+id/currentposition"
+        app:layout_constraintBottom_toTopOf="@+id/current_position"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -37,69 +38,43 @@
 
 
     <Spinner
-        android:id="@+id/currentposition"
+        android:id="@+id/current_position"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:contextClickable="true"
         android:layout_marginStart="100dp"
         android:layout_marginTop="25dp"
         android:layout_marginEnd="100dp"
+        android:contentDescription="@string/Select_spinner"
+        android:contextClickable="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text1" />
-
-    <TextView
-        android:id="@+id/delayText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="25dp"
-        android:gravity="center|center_horizontal|center_vertical"
-        android:text="Input Sensor frequency between 0.2 to 50"
-        android:textAlignment="center"
-        android:textSize="17sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/currentposition" />
-
-    <EditText
-        android:id="@+id/frequency"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:inputType="numberSigned"
-        android:hint="1"
-        android:text="1"
-        app:flow_horizontalAlign="center"
-        app:layout_constraintBottom_toTopOf="@+id/start"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/delayText"
-        app:layout_constraintWidth_default="wrap" />
+        app:layout_constraintTop_toBottomOf="@+id/text1"
+        tools:ignore="TouchTargetSizeCheck" />
 
     <Button
         android:id="@+id/start"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="50dp"
         android:text="Start"
         android:textAlignment="center"
         android:textSize="25sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/frequency" />
+        app:layout_constraintTop_toBottomOf="@+id/current_position" />
 
-    <TextView
-        android:id="@+id/textView2"
+    <Button
+        android:id="@+id/fileManager"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="2dp"
-        android:layout_marginBottom="2dp"
-        android:text="Developed by Rishi Agarwal"
-        android:textSize="15sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:layout_marginTop="50dp"
+        android:text="Manage Files"
+        android:textAlignment="center"
+        android:textSize="25sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/start" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

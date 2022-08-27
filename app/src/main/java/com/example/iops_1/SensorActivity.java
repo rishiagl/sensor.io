@@ -15,74 +15,76 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.opencsv.CSVWriter;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class SensorActivity extends AppCompatActivity {
 
-    private String position;
-    private int delay;
-    TextView positiontext;
+    String position;
+    File appRootFile;
+    File sensorFiles;
+    File currentFile;
+    TextView positionText;
     Button outdoor;
     Button indoor;
     Button semiindoor;
     Button saveAndExit;
     SensorManager sm= null;
     ArrayList<sensorEvent> sensorObject = new ArrayList<>();
-    File rootdir;
-    File tempFiles;
-    File savedFiles;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sensor);
+        setTitle("Sensor Activity");
 
         Bundle bundle = getIntent().getExtras();
         position = bundle.getString("Position");
-        delay = Integer.parseInt(bundle.getString("Delay"));
 
-        System.out.println(delay);
         initiateDirectory();
-
-        buttonFuctions();
-
+        buttonFunctions();
         sensorFunction();
-
     }
 
     public void initiateDirectory()
     {
-        rootdir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/IOPS_1");
-        if (!rootdir.exists()) {
-            if (!rootdir.mkdirs()) {
+        appRootFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/Sensor App");
+        if (!appRootFile.exists()) {
+            if (!appRootFile.mkdirs()) {
                 System.out.println("Root Not Created");
             }
         }
 
-        tempFiles = new File(rootdir + "/Temp");
-        if (!tempFiles.exists()) {
-            if (!tempFiles.mkdirs()) {
+        sensorFiles = new File(appRootFile + "/Sensor Files");
+        if (!sensorFiles.exists()) {
+            if (!sensorFiles.mkdirs()) {
                 System.out.println("Root Not Created");
             }
         }
 
-        savedFiles = new File(rootdir + "/Saved Files");
-        if (!savedFiles.exists()) {
-            if (!savedFiles.mkdirs()) {
+        Long date=System.currentTimeMillis();
+        SimpleDateFormat dateFormat =new SimpleDateFormat("dd_MM_yyyy_HH_mm", Locale.getDefault());
+        String dateStr = dateFormat.format(date);
+        System.out.println(dateStr);
+
+        currentFile = new File( sensorFiles + "/" + dateStr);
+        if (!currentFile.exists()) {
+            if (!currentFile.mkdirs()) {
                 System.out.println("Root Not Created");
             }
         }
-
     }
 
-    public void buttonFuctions()
+    public void buttonFunctions()
     {
         String positionPrefix = "Current Position: ";
-        positiontext = findViewById(R.id.currentposition);
-        positiontext.setText(positionPrefix.concat(position));
+        positionText = findViewById(R.id.currentposition);
+        positionText.setText(positionPrefix.concat(position));
         indoor = findViewById(R.id.indoor);
         outdoor = findViewById(R.id.outdoor);
         semiindoor = findViewById(R.id.semiindoor);
@@ -91,30 +93,33 @@ public class SensorActivity extends AppCompatActivity {
         indoor.setOnClickListener(view -> {
 
             position="Indoor";
-            positiontext.setText(positionPrefix.concat(position));
+            positionText.setText(positionPrefix.concat(position));
         });
 
         outdoor.setOnClickListener(view -> {
 
             position="Outdoor";
-            positiontext.setText(positionPrefix.concat(position));
+            positionText.setText(positionPrefix.concat(position));
         });
 
         semiindoor.setOnClickListener(view -> {
 
             position="Semi-indoor";
-            positiontext.setText(positionPrefix.concat(position));
+            positionText.setText(positionPrefix.concat(position));
         });
 
         saveAndExit.setOnClickListener(view -> onBackPressed());
     }
-
     public void sensorFunction()
     {
         sm= (SensorManager)getSystemService(SENSOR_SERVICE);
 
         if(sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)!= null) {
             sensorObject.add(new sensorEvent(sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)));
+        }
+        else
+        {
+            System.out.println("fail");
         }
         if(sm.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)!=null) {
             sensorObject.add(new sensorEvent(sm.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)));
@@ -140,10 +145,8 @@ public class SensorActivity extends AppCompatActivity {
 
         for(int i=0;i<sensorObject.size();i++)
         {
-            sm.registerListener(sensorObject.get(i).sel, sensorObject.get(i).sensor, delay);
+            sm.registerListener(sensorObject.get(i).sel, sensorObject.get(i).sensor, SensorManager.SENSOR_DELAY_NORMAL);
         }
-
-
     }
 
     public class sensorEvent {
@@ -159,7 +162,7 @@ public class SensorActivity extends AppCompatActivity {
         {
             sensor = sensor1;
             startTime = System.nanoTime();
-            file = new File(tempFiles, sensor.getName().concat(".csv"));
+            file = new File(currentFile, sensor.getName().concat(".csv"));
 
             {
                 try {
@@ -186,9 +189,9 @@ public class SensorActivity extends AppCompatActivity {
                 try {
                     csvWriter.writeNext(data);
                 }
-                 catch(NullPointerException e) {
-                     e.printStackTrace();
-                 }
+                catch(NullPointerException e) {
+                    e.printStackTrace();
+                }
             }
         };
     }
@@ -205,7 +208,7 @@ public class SensorActivity extends AppCompatActivity {
     }
     @Override
     protected void onStop() {
-        System.out.println("SensorActivity stoped");
+        System.out.println("SensorActivity stopped");
         super.onStop();
     }
     @Override
@@ -220,7 +223,7 @@ public class SensorActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
-        Toast toast = Toast.makeText(getApplicationContext(), "Sensors Unregistered and File Saved at ".concat(String.valueOf(tempFiles)), Toast.LENGTH_LONG);
+        Toast toast = Toast.makeText(getApplicationContext(), "Sensors Unregistered and File Saved at ".concat(String.valueOf(currentFile)), Toast.LENGTH_LONG);
         toast.show();
         System.out.println("SensorActivity Destroyed");
         super.onDestroy();
