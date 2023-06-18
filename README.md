@@ -1,19 +1,8 @@
-# SmartPhone-Sensor-Data-Collection-App
-We can collect raw data of the sensors available in our smartphone by using this app.
-This app labels the data into user's position(Indoor, Semi-indoor and Outdoor).
-It creates a separate CSV file for each sensors, which you can retrieve from /documents/IOPS_1.
+# Sensor.io
 
-Version v1.0.0
-*Basic version
+A Android Application to collect labelled sensor data. Here, labelling is performed in terms of user location therefore at any specific time a user can be either indoor, outdoor, or semi-indoor. Data is stored in a CSV file and can be retrieved from the shared user location in the device.
 
-Version v1.0.1
-*The calling of sensor event listioner is pushed from onresume() function to oncreate()
-*The unregistering of event listener is pushed to ondestroy() so that data can be collected while using another app
+App is published in google Play Store, here is the [link](https://play.google.com/store/apps/details?id=com.iops.iops_1).
 
-Version v1.0.2
-*The App was throwing nullPointerException in version v1.0.1 when the CSVwriter was wirting the data in file in onSensorChanged() function. This glitch was rectified and solved using try and catch metthod.
-*The App was crashing upon destruction of the SensorActivity page. Function onBackPressed() was added to solve this.
-*Main Activity code is cleaned by adding functions.
-*In SensorActivity.java sensor event timestamp was added to the files.
-*Input field for sensor frequency added in Main Activity, the same has been caliberated with SensorActivity.
-*Save and Exit button added in the SensorActivity page.
+This App is part of the larger project tittled "Seamless Indoor-Outdoor Detection and Navigation solution
+using Machine Learning and Artificial Intelligence."
